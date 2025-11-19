@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/ojipoetra/backend-web-tonggak/models/web"
 	"github.com/ojipoetra/backend-web-tonggak/services"
 )
 
@@ -10,9 +13,22 @@ type KamarControllerImpl struct {
 }
 
 // Create implements KamarControllers.
-func (controller *KamarControllerImpl) Create(c *gin.Context) {
-	// kamarCreateRequest := web.CreateKamarRequest{}
-	// if err := c.ShouldBindBodyWithJSON(&kamarCreateRequest)
+func (controller *KamarControllerImpl) Create(ctx *gin.Context) {
+	kamarCreateRequest := web.CreateKamarRequest{}
+	if err := ctx.ShouldBindBodyWithJSON(&kamarCreateRequest); err != nil{
+		ctx.JSON(http.StatusBadRequest, web.WebResponse{
+			Code: 400,
+			Status: "BAD REQUEST",
+		})
+		return
+	}
+	kamarResponse := controller.kamarService.Create(ctx, kamarCreateRequest)
+	ctx.JSON(http.StatusOK, web.WebResponse{
+		Code: 200,
+		Status: "OK",
+		Data: kamarResponse,
+	})
+
 
 }
 
